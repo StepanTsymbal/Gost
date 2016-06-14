@@ -1,0 +1,73 @@
+<project name="Gost" default="dist" >
+
+	<property name="lib" value="lib"/>
+	<property name="build" value="build"/>
+	<property name="dist" value="dist"/>
+	<property name="build.classes" value="build/classes"/>
+	<property name="build.tests" value="build/tests"/>
+
+	<path id="test.classpath">
+		<!--pathelement location="test/java" /-->
+		<pathelement location="build/tests" />
+		<pathelement location="build/classes" />
+		<fileset dir="lib">
+			<include name="junit-4.12.jar"/>
+		</fileset>
+	</path>
+		
+	<!--Удаление папки build-->
+	<target name="clean" description="clean up">
+		<delete dir="${build}"/>
+		<delete dir="${dist}"/>
+	</target>
+			
+	<!--Создание необходимых папок-->
+	<target name="init" description="make dirs" depends="clean">
+		<mkdir dir="${build}"/>
+		<mkdir dir="${build.classes}"/>
+		<mkdir dir="${dist}"/>
+		<mkdir dir="${build.tests}"/>
+	</target>
+		
+	<!--Компиляция файлов программы-->
+	<target name="compile" description="compile java" depends="init">
+		<javac destdir="${build.classes}">
+			<src path="src/java"/>
+		</javac>
+	</target>
+		
+	<!--Компиляция тестов-->
+	<target name="compiletest" depends="compile" description="Compile Test Classes">
+		<javac destdir="${build.tests}">
+			<classpath refid="test.classpath"/>
+			<src path="test/java"/>
+		</javac>
+	</target>
+		
+	<!--Создание jar-библиотеки-->	
+	<target name="dist" description="make jar file" depends="compile">
+		<jar destfile="dist/GostHash.jar">
+			<fileset dir="${build.classes}">
+			</fileset>
+		</jar>
+	</target>
+	
+	<!--Запуск тестов-->
+	<target name="test" depends="compiletest">
+		<junit>
+			<classpath refid="test.classpath" />
+			<formatter type="brief" usefile="false" />
+			<test name="com.bifit.security.TestHashGost" />
+		</junit>
+	</target>
+		
+	<!--Создание javadoc-->	
+	<target name="apidoc" description="generate documentation">
+		<delete dir="dist/doc"/>
+		<mkdir dir="dist/doc"/>
+		<javadoc destdir="dist/doc">
+			<fileset dir="src/java"/>
+		</javadoc>
+    </target>
+
+</project>
